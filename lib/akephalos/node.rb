@@ -55,7 +55,7 @@ module Akephalos
       end
     end
 
-    # Set the value of the form input.
+    # Set the value of the form input and then wait for any keypress events.
     #
     # @param [String] value
     def value=(value)
@@ -71,6 +71,7 @@ module Akephalos
           type(value)
         end
       end
+      wait_for_jobs
     end
 
     # Types each character into a text or input field.
@@ -122,6 +123,7 @@ module Akephalos
     # @param [String] JavaScript event name
     def fire_event(name)
       @_node.fireEvent(name)
+      wait_for_jobs
     end
 
     # @return [String] the node's tag name
@@ -149,8 +151,7 @@ module Akephalos
     # fire.
     def click
       @_node.click
-      @_node.getPage.getEnclosingWindow.getJobManager.waitForJobs(1000)
-      @_node.getPage.getEnclosingWindow.getJobManager.waitForJobsStartingBefore(1000)
+      wait_for_jobs
     end
 
     # Search for child nodes which match the given XPath selector.
@@ -166,6 +167,13 @@ module Akephalos
     # @return [String] the XPath expression for this node
     def xpath
       @_node.getCanonicalXPath
+    end
+
+    private
+
+    def wait_for_jobs
+      @_node.getPage.getEnclosingWindow.getJobManager.waitForJobs(1000)
+      @_node.getPage.getEnclosingWindow.getJobManager.waitForJobsStartingBefore(1000)
     end
   end
 
